@@ -12,6 +12,9 @@ const STAgencies = [
   {
     urlToken: 'SantaClaritaCity'
   },
+  {
+    urlToken: 'SanJoseCity'
+  },
 ]
 
 // import { SouthTech } from 'local-cfd';
@@ -51,17 +54,33 @@ const createAgencyElections = async ({ software, urlToken }) => {
   return results;
 }
 
-// const createElectionFilers = async () => {
-//   const filers = await SouthTech.getFilers(STAgencies[0].urlToken, '6/7/2022');
-//   console.log({filers});
-// }
+const createElectionFilers = async () => {
+  const electionDates = [
+    '6/7/2022',
+    '11/3/2020',
+  ];
+
+  const filers = await SouthTech.getFilers(STAgencies[1].urlToken, electionDates[1]);
+  // this returns tha same 10 for each page of filers
+  /**
+   * In goToDataPageNum try returning the page and passing that page to getTableData
+   */
+  let filtered = filers.filter((filer) => filer.candidate_last_name);
+
+  // console.log({filtered: filtered.slice(0, 6)});
+  console.log({filtered: filtered});
+  console.log({filtered_length: filtered.length});
+  console.log({filers_length: filers.length});
+}
 
 ;(async () => {
   try {
     // const result = await getAgencies();
     // const result = await createElectionFilers();
 
-    const result = await seedAgencyElections({ software: 'SouthTech', agencyList: STAgencies});
+    // const result = await seedAgencyElections({ software: 'SouthTech', agencyList: STAgencies});
+
+    const result = await createElectionFilers();
 
     // console.log(result);
     
