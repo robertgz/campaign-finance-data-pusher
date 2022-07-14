@@ -15,16 +15,27 @@ const STAgencies = [
   {
     urlToken: 'SanJoseCity'
   },
-]
+];
 
-// import { SouthTech } from 'local-cfd';
-import { SouthTech } from 'campaign-finance-downloader';
+const STSites = [
+  'www.southtechhosting.com/SanDiegoCounty',
+  'www.southtechhosting.com/DavisCity',
+  'www.southtechhosting.com/SantaClaritaCity',
+  'www.southtechhosting.com/SanJoseCity',
+  'campaigndocs.co.fresno.ca.us',
+  'efiler.stancounty.com',
+  'campaign.solanocounty.com',
+  'campaigndocs.co.fresno.ca.us',
+];
 
-const seedAgencyElections = async ({ software, agencyList }) => {
+import { SouthTech } from 'local-cfd';
+// import { SouthTech } from 'campaign-finance-downloader';
+
+const seedAgencyElections = async ({ software, siteList }) => {
   const results = [];
 
-  for await (const agency of agencyList) {
-    const result = await createAgencyElections({ software, urlToken: agency.urlToken });
+  for await (const site of siteList) {
+    const result = await createAgencyElections({ software, site });
 
     results.push(result);
   }
@@ -32,13 +43,15 @@ const seedAgencyElections = async ({ software, agencyList }) => {
   return results;
 }
 
-const createAgencyElections = async ({ software, urlToken }) => {
+const createAgencyElections = async ({ software, site }) => {
 
-  const name = await SouthTech.getAgencyName(urlToken);
-
-  const dates = await SouthTech.getElectionDates(urlToken);
-
-  const variables = { name, software, urlToken };
+  const name = await SouthTech.getAgencyName(site);
+  
+  const dates = await SouthTech.getElectionDates(site);
+  
+  // console.log({ dates })
+  // return dates;
+  const variables = { name, software, urlToken: '', urlPrefix: site };
   const agency = await createAgency(variables);
 
   const agencyId = agency.createAgency.id;
@@ -60,7 +73,7 @@ const createElectionFilers = async () => {
     '11/3/2020',
   ];
 
-  const filers = await SouthTech.getFilers(STAgencies[1].urlToken, electionDates[1]);
+  const filers = await SouthTech.getFilers(STSites[0], electionDates[0]);
   // this returns tha same 10 for each page of filers
   /**
    * In goToDataPageNum try returning the page and passing that page to getTableData
@@ -78,11 +91,14 @@ const createElectionFilers = async () => {
     // const result = await getAgencies();
     // const result = await createElectionFilers();
 
-    // const result = await seedAgencyElections({ software: 'SouthTech', agencyList: STAgencies});
+    // const result = await seedAgencyElections({ software: 'SouthTech', siteList: STSites });
+
+    // const result = await createAgencyElections({ software: '', site: STSites[0] });
+
 
     const result = await createElectionFilers();
 
-    // console.log(result);
+    console.log(result);
     
   } catch (error) {
     console.error(error)
